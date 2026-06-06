@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Luyện Phản Xạ Thẻ Bài - Siêu Trí Nhớ</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            height: 100vh;
+            max-height: 850px;
+            background-color: #2d2d2d;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        /* Các Màn Hình */
+        .screen {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        h1, h2 {
+            font-size: 24px;
+            text-align: center;
+            color: #ffcc00;
+            margin-top: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        h2 {
+            font-size: 20px;
+            margin-top: 40px;
+        }
+
+        /* Màn Hình Chọn Level - Chuyển sang 3 cột để chứa đủ các mốc thời gian mới */
+        .level-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            width: 100%;
+            padding: 10px 0;
+        }
+
+        .mode-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            width: 100%;
+            padding: 10px 0;
+            margin-bottom: 40px;
+        }
+
+        .btn {
+            background: linear-gradient(145deg, #ff4e50, #f9d423);
+            border: none;
+            color: white;
+            padding: 12px 5px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            transition: transform 0.1s;
+            text-align: center;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-blue {
+            background: linear-gradient(145deg, #00c6ff, #0072ff);
+        }
+
+        .btn-green {
+            background: linear-gradient(145deg, #11998e, #38ef7d);
+        }
+
+        /* Màn Hình Chơi */
+        .stats {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            font-size: 15px;
+            font-weight: bold;
+            padding: 10px;
+            background-color: #1e1e1e;
+            border-radius: 8px;
+        }
+
+        .card-area {
+            position: relative;
+            width: 100%;
+            height: 55vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card-wrapper {
+            position: relative;
+            width: 380px; 
+            height: 400px;
+        }
+
+        .card {
+            position: absolute;
+            height: 100%;
+            width: 240px; 
+            border-radius: 12px;
+            box-shadow: -4px 4px 15px rgba(0,0,0,0.4);
+            background-color: #fff;
+            object-fit: cover;
+            transform: rotate(-180deg);
+            display: none;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background-color: #444;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 100%;
+            background-color: #38ef7d;
+            transition: width linear;
+        }
+
+        /* Màn Hình Kết Thúc */
+        .end-title {
+            font-size: 28px;
+            color: #38ef7d;
+            margin-top: 50px;
+        }
+
+        .end-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            margin-bottom: 50px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div id="screen-home" class="screen active">
+            <h1>Phản Xạ Thẻ Bài</h1>
+            <div class="level-container">
+                <button class="btn" onclick="selectLevel(5.0)">5.0s</button>
+                <button class="btn" onclick="selectLevel(4.5)">4.5s</button>
+                <button class="btn" onclick="selectLevel(4.0)">4.0s</button>
+                <button class="btn" onclick="selectLevel(3.5)">3.5s</button>
+                <button class="btn" onclick="selectLevel(3.0)">3.0s</button>
+                <button class="btn" onclick="selectLevel(2.5)">2.5s</button>
+                <button class="btn" onclick="selectLevel(2.0)">2.0s</button>
+                <button class="btn" onclick="selectLevel(1.5)">1.5s</button>
+                <button class="btn" onclick="selectLevel(1.0)">1.0s</button>
+                <button class="btn btn-blue" onclick="selectLevel(0.9)">0.9s</button>
+                <button class="btn btn-blue" onclick="selectLevel(0.8)">0.8s</button>
+                <button class="btn btn-blue" onclick="selectLevel(0.7)">0.7s</button>
+                <button class="btn btn-blue" onclick="selectLevel(0.6)">0.6s</button>
+                <button class="btn btn-blue" onclick="selectLevel(0.5)">0.5s</button>
+            </div>
+            <div style="height: 20px;"></div>
+        </div>
+
+        <div id="screen-mode" class="screen">
+            <h2>Chọn Chế Độ Chơi</h2>
+            <div class="mode-container">
+                <button class="btn btn-blue" onclick="selectMode(2)">2 Lá Bài</button>
+                <button class="btn btn-green" onclick="selectMode(4)">4 Lá Bài</button>
+            </div>
+            <button class="btn" style="width: 100%; background: #444;" onclick="switchScreen('screen-home')">Quay lại</button>
+        </div>
+
+        <div id="screen-game" class="screen">
+            <div class="stats">
+                <span id="txt-level">Tốc độ: 5s</span>
+                <span id="txt-mode">Chế độ: 2 lá</span>
+                <span id="txt-progress">Đã lật: 0/26</span>
+            </div>
+
+            <div class="card-area">
+                <div class="card-wrapper" id="card-block" style="display: none;">
+                    <img id="img-card1" class="card" src="" alt="Card 1">
+                    <img id="img-card2" class="card" src="" alt="Card 2">
+                    <img id="img-card3" class="card" src="" alt="Card 3">
+                    <img id="img-card4" class="card" src="" alt="Card 4">
+                </div>
+                <button id="btn-start" class="btn btn-blue" style="padding: 20px 40px; font-size: 20px;" onclick="startGame()">BẮT ĐẦU</button>
+            </div>
+
+            <div style="width: 100%;">
+                <div class="progress-bar-container">
+                    <div id="timer-bar" class="progress-bar"></div>
+                </div>
+                <button class="btn btn-blue" style="width: 100%; margin-top: 15px; background: #444;" onclick="goHome()">Quay về trang chủ</button>
+            </div>
+        </div>
+
+        <div id="screen-end" class="screen">
+            <div class="end-title">HOÀN THÀNH!</div>
+            <div style="font-size: 18px; text-align: center; color: #aaa;">Bạn đã hoàn thành xuất sắc toàn bộ bộ bài!</div>
+            <div class="end-buttons">
+                <button class="btn btn-green" onclick="restartGameNow()">Tiếp tục chơi luôn</button>
+                <button class="btn btn-blue" onclick="goHome()">Quay về trang chủ</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentLevelTime = 5.0; 
+        let cardsPerTurn = 2; 
+        let deck = [];
+        let turnIndex = 0;
+        let maxTurns = 26; 
+        let gameInterval = null;
+
+        function switchScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function selectLevel(time) {
+            currentLevelTime = time;
+            document.getElementById('txt-level').innerText = `Tốc độ: ${time}s`;
+            switchScreen('screen-mode'); 
+        }
+
+        function selectMode(mode) {
+            cardsPerTurn = mode;
+            maxTurns = Math.floor(52 / cardsPerTurn); 
+            document.getElementById('txt-mode').innerText = `Chế độ: ${cardsPerTurn} lá`;
+            
+            document.getElementById('btn-start').style.display = 'block';
+            document.getElementById('card-block').style.display = 'none';
+            document.getElementById('txt-progress').innerText = `Đã lật: 0/${maxTurns}`;
+            
+            setupCardLayout();
+            resetProgressBar();
+            switchScreen('screen-game');
+        }
+
+        function setupCardLayout() {
+            const step = cardsPerTurn === 4 ? 45 : 80; 
+            
+            for (let i = 1; i <= 4; i++) {
+                const cardEl = document.getElementById(`img-card${i}`);
+                if (i <= cardsPerTurn) {
+                    cardEl.style.display = 'block';
+                    cardEl.style.left = `${(i - 1) * step}px`;
+                    cardEl.style.zIndex = i; 
+                } else {
+                    cardEl.style.display = 'none'; 
+                }
+            }
+        }
+
+        function initDeck() {
+            deck = [];
+            for (let i = 1; i <= 52; i++) {
+                deck.push(i);
+            }
+            for (let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+            turnIndex = 0;
+        }
+
+        function startGame() {
+            document.getElementById('btn-start').style.display = 'none';
+            document.getElementById('card-block').style.display = 'block';
+            initDeck();
+            nextTurn();
+        }
+
+        function nextTurn() {
+            if (turnIndex >= maxTurns) { 
+                clearInterval(gameInterval);
+                switchScreen('screen-end');
+                return;
+            }
+
+            for (let i = 0; i < cardsPerTurn; i++) {
+                const cardId = deck[turnIndex * cardsPerTurn + i];
+                document.getElementById(`img-card${i + 1}`).src = `${cardId}.png`;
+            }
+
+            document.getElementById('txt-progress').innerText = `Đã lật: ${turnIndex + 1}/${maxTurns}`;
+
+            triggerProgressBar();
+            turnIndex++;
+        }
+
+        function triggerProgressBar() {
+            const bar = document.getElementById('timer-bar');
+            bar.style.transition = 'none';
+            bar.style.width = '100%';
+            
+            bar.offsetHeight; 
+
+            bar.style.transition = `width ${currentLevelTime}s linear`;
+            bar.style.width = '0%';
+
+            clearInterval(gameInterval);
+            gameInterval = setInterval(() => {
+                nextTurn();
+            }, currentLevelTime * 1000);
+        }
+
+        function resetProgressBar() {
+            const bar = document.getElementById('timer-bar');
+            bar.style.transition = 'none';
+            bar.style.width = '100%';
+        }
+
+        function restartGameNow() {
+            document.getElementById('btn-start').style.display = 'none';
+            document.getElementById('card-block').style.display = 'block';
+            switchScreen('screen-game');
+            initDeck();
+            nextTurn();
+        }
+
+        function goHome() {
+            clearInterval(gameInterval);
+            switchScreen('screen-home');
+        }
+    </script>
+</body>
+</html>
